@@ -4,6 +4,7 @@ import ROOT
 import sys
 from DataFormats.FWLite import Events, Handle
 from style import PlotStyle
+from cmsTitle import CMS_lumi
 
 PlotStyle()
 
@@ -53,10 +54,10 @@ label = ('genParticles')
 # Create histograms, etc.
 ROOT.gROOT.SetBatch()
 ROOT.gROOT.SetStyle('Plain')
-h1_pdgid = ROOT.TH1F ('h1_pdgid', 'PDG ID'  , 100, - 50,  50)
-h1_massA = ROOT.TH1F ('h1_massA', 'h1_massA',  20,  258, 262)
-h1_massZ = ROOT.TH1F ('h1_massZ', 'h1_massZ',  20,   85,  99)
-h1_massh = ROOT.TH1F ('h1_massh', 'h1_massh',  20,  124.5, 125.5)
+h1_pdgid = ROOT.TH1F ('h1_pdgid', '', 100, - 50,  50)
+h1_massA = ROOT.TH1F ('h1_massA', '',  20,  258, 262)
+h1_massZ = ROOT.TH1F ('h1_massZ', '',  20,   85,  99)
+h1_massh = ROOT.TH1F ('h1_massh', '',  20,  124.5, 125.5)
 
 for i, event in enumerate(events):
     print i,']'
@@ -84,11 +85,14 @@ for i, event in enumerate(events):
 
 # make a canvas, draw, and save it
 c1 = ROOT.TCanvas()
+CMS_lumi(ROOT.gPad, 2, 0)
+
+
 h1_massA.Draw()
-c1.Print ('h1_massA.png')
+c1.Print ('h1_massA.pdf')
 
 h1_massZ.Draw()
-c1.Print ('h1_massZ.png')
+c1.Print ('h1_massZ.pdf')
 
 h1_massh.Draw()
-c1.Print ('h1_massh.png')
+c1.Print ('h1_massh.pdf')
