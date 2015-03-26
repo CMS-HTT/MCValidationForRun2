@@ -61,23 +61,18 @@ histograms_properties['h1_mm_mu2_phi' ] = ['h1_mm_mu2_phi' , '',  20, -  4  ,   
 histograms_properties['h1_ee_ele1_pt' ] = ['h1_ee_ele1_pt' , '',  20,    0  , 200  , 'p_{T}^{e_{1}} [GeV]'   ,]
 histograms_properties['h1_ee_ele1_eta'] = ['h1_ee_ele1_eta', '',  20, -  6  ,   6  , '#eta_{e_{1}} [GeV]'    ,]
 histograms_properties['h1_ee_ele1_phi'] = ['h1_ee_ele1_phi', '',  20, -  4  ,   4  , '#phi_{e_{1}} [GeV]'    ,]
-histograms_properties['h1_ee_ele2_pt' ] = ['h1_ee_ele2_pt' , '',  20,    0  , 200  , 'p_{T}^{e_{2}} [GeV]'    ,]
-histograms_properties['h1_ee_ele2_eta'] = ['h1_ee_ele2_eta', '',  20, -  6  ,   6  , '#eta_{e_{2}} [GeV]'     ,]
-histograms_properties['h1_ee_ele2_phi'] = ['h1_ee_ele2_phi', '',  20, -  4  ,   4  , '#phi_{e_{2}} [GeV]'     ,]
+histograms_properties['h1_ee_ele2_pt' ] = ['h1_ee_ele2_pt' , '',  20,    0  , 200  , 'p_{T}^{e_{2}} [GeV]'   ,]
+histograms_properties['h1_ee_ele2_eta'] = ['h1_ee_ele2_eta', '',  20, -  6  ,   6  , '#eta_{e_{2}} [GeV]'    ,]
+histograms_properties['h1_ee_ele2_phi'] = ['h1_ee_ele2_phi', '',  20, -  4  ,   4  , '#phi_{e_{2}} [GeV]'    ,]
 
+histograms_properties['h1_njets'      ] = ['h1_njets'      , '',  10,    0  ,  10  , '# jets (p_{T}>30 GeV, |#eta|<5)',]
 
-
-
-
-
-# histograms_properties['h1_njets'      ] = ['h1_njets'      , '',  20,  250, 270, 'm_{A} [GeV]'           ,]
-#
-# histograms_properties['h1_jet1_pt'    ] = ['h1_jet1_pt'    , '',  20,  250, 270, 'p_{T}^{h} [GeV]'       ,]
-# histograms_properties['h1_jet1_eta'   ] = ['h1_jet1_eta'   , '',  20,  250, 270, '#eta_{h} [GeV]'        ,]
-# histograms_properties['h1_jet1_phi'   ] = ['h1_jet1_phi'   , '',  20,  250, 270, '#phi_{h} [GeV]'        ,]
-# histograms_properties['h1_jet2_pt'    ] = ['h1_jet2_pt'    , '',  20,  250, 270, 'p_{T}^{h} [GeV]'       ,]
-# histograms_properties['h1_jet2_eta'   ] = ['h1_jet2_eta'   , '',  20,  250, 270, '#eta_{h} [GeV]'        ,]
-# histograms_properties['h1_jet2_phi'   ] = ['h1_jet2_phi'   , '',  20,  250, 270, '#phi_{h} [GeV]'        ,]
+histograms_properties['h1_jet1_pt'    ] = ['h1_jet1_pt'    , '',  20,    0  , 200  , 'p_{T}^{jet_{1}} [GeV]' ,]
+histograms_properties['h1_jet1_eta'   ] = ['h1_jet1_eta'   , '',  20, -  6  ,   6  , '#eta_{jet_{1}} [GeV]'  ,]
+histograms_properties['h1_jet1_phi'   ] = ['h1_jet1_phi'   , '',  20, -  4  ,   4  , '#phi_{jet_{1}} [GeV]'  ,]
+histograms_properties['h1_jet2_pt'    ] = ['h1_jet2_pt'    , '',  20,    0  , 200  , 'p_{T}^{jet_{2}} [GeV]' ,]
+histograms_properties['h1_jet2_eta'   ] = ['h1_jet2_eta'   , '',  20, -  6  ,   6  , '#eta_{jet_{2}} [GeV]'  ,]
+histograms_properties['h1_jet2_phi'   ] = ['h1_jet2_phi'   , '',  20, -  4  ,   4  , '#phi_{jet_{2}} [GeV]'  ,]
 
 for k, v in histograms_properties.items():
     histo = TH1F(v[0], v[1], v[2], v[3], v[4])

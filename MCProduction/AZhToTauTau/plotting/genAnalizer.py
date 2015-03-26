@@ -3,6 +3,7 @@
 import ROOT
 import sys
 import os
+from itertools import product
 from DataFormats.FWLite import Events, Handle
 from style import PlotStyle
 from cmsTitle import CMS_lumi
@@ -53,9 +54,10 @@ events = Events ([
                   '../{MASS}/first2k_20of20/HIG-RunIIWinter15GS-00003_20of20.root'.format(MASS = mass),
                   ])
 
-# create handle outside of loop
-handle  = Handle ('std::vector<reco::GenParticle>')
-label = ('genParticles')
+
+handles = {}
+handles['genParticles'] = [Handle('std::vector<reco::GenParticle>'), 'genParticles']
+handles['ak4GenJets']   = [Handle('vector<reco::GenJet>'          ), 'ak4GenJets']
 
 # Create histograms, etc.
 ROOT.gROOT.SetBatch()
@@ -104,6 +106,23 @@ def tauDecayMode(tau):
 
     return dm, final_daughter
 
+def cleanCollection(toBeCleaned, otherCollection, dR = 0.3):
+    cleanedColl = []
+    for p1, p2 in product(toBeCleaned, otherCollection):
+        p1_vec = ROOT.TLorentzVector()
+        p2_vec = ROOT.TLorentzVector()
+        p1_vec.SetPtEtaPhiE(p1.p4().pt() ,
+                            p1.p4().eta(),
+                            p1.p4().phi(),
+                            p1.p4().e()  )
+        p2_vec.SetPtEtaPhiE(p2.p4().pt() ,
+                            p2.p4().eta(),
+                            p2.p4().phi(),
+                            p2.p4().e()  )
+        if p1_vec.DeltaR(p2_vec) >= 0.3:
+            cleanedColl.append(p1)
+    return list(set(cleanedColl))
+
 def cosmetics():
     CMS_lumi(ROOT.gPad, 4, 0)
     stats = ROOT.gPad.GetPrimitive('stats')
@@ -113,10 +132,16 @@ def cosmetics():
     stats.SetX2NDC(0.92)
 
 for i, event in enumerate(events):
+
     if i+1 > 100: break
     print i,']'
-    event.getByLabel(label, handle)
-    genparticles = handle.product()
+
+    event.getByLabel(handles['genParticles'][1], handles['genParticles'][0])
+    genparticles = handles['genParticles'][0].product()
+
+    event.getByLabel(handles['ak4GenJets'][1], handles['ak4GenJets'][0])
+    genjets = handles['ak4GenJets'][0].product()
+
     gentau = [p for p in genparticles if abs(p.pdgId()) == 15                             ]
     genmu  = [p for p in genparticles if abs(p.pdgId()) == 13                             ]
     genele = [p for p in genparticles if abs(p.pdgId()) == 11                             ]
@@ -204,6 +229,17 @@ for i, event in enumerate(events):
         histograms['h1_channel'].Fill('em',1.)
         fill4vector(final_state_tau_into_mu_from_h125 [0], histograms, 'h1_em_mu_pt')
         fill4vector(final_state_tau_into_ele_from_h125[0], histograms, 'h1_em_ele_pt')
+
+    gentau_stable = [p for p in genparticles if abs(p.pdgId()) == 15 and p.status() == 2]
+    genmu_stable  = [p for p in genparticles if abs(p.pdgId()) == 13 and p.status() == 1]
+    genele_stable = [p for p in genparticles if abs(p.pdgId()) == 11 and p.status() == 1]
+
+    genjetsel = [jet for jet in genjets if jet.pt()>30 and abs(jet.eta())<5.]
+    genjetsel = cleanCollection(genjetsel, gentau_stable + genmu_stable + genele_stable)
+
+    histograms['h1_njets'].Fill(len(genjetsel))
+    for i in xrange( min(len(genjetsel),2) ):
+        fill4vector(genjetsel[i], histograms, 'h1_jet{I}_eta'.format(I=str(i+1)))
 
 # make a canvas, draw, and save it
 c1 = ROOT.TCanvas()
