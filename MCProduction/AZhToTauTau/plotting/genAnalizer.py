@@ -9,12 +9,26 @@ from style import PlotStyle
 from cmsTitle import CMS_lumi
 from histograms import histograms
 
+
+mass = '220'
+histograms['h1_A_mass'] = ROOT.TH1F('h1_A_mass', '',  40,  int(mass)*0.95, int(mass)*1.05)
+histograms['h1_A_mass'].SetMinimum(0.)
+histograms['h1_A_mass'].SetLineWidth(2)
+histograms['h1_A_mass'].SetLineColor(ROOT.kBlack)
+histograms['h1_A_mass'].SetFillColor(ROOT.kOrange)
+histograms['h1_A_mass'].SetMarkerStyle(8)
+histograms['h1_A_mass'].SetFillStyle(3344)
+histograms['h1_A_mass'].GetYaxis().SetTitle('events')
+histograms['h1_A_mass'].GetYaxis().SetTitleOffset(1.6)
+histograms['h1_A_mass'].GetXaxis().SetTitle('m_{A} [GeV]')
+histograms['h1_A_mass'].GetXaxis().SetTitleOffset(1.3)
+
 PlotStyle()
 ROOT.gStyle.SetOptStat(1)
 ROOT.gStyle.SetStatBorderSize(0)
 ROOT.gStyle.SetOptStat('emr')
 
-mass = '300'
+
 folder = 'mA'+mass
 os.system('mkdir ' + folder)
 
@@ -107,20 +121,30 @@ def tauDecayMode(tau):
     return dm, final_daughter
 
 def cleanCollection(toBeCleaned, otherCollection, dR = 0.3):
-    cleanedColl = []
-    for p1, p2 in product(toBeCleaned, otherCollection):
+    cleanedColl      = []
+    jetsToRemove     = []
+    matchedParticles = []
+    for pair in product(toBeCleaned, otherCollection):
+        if pair[0] in jetsToRemove or pair[1] in matchedParticles:
+            continue
         p1_vec = ROOT.TLorentzVector()
         p2_vec = ROOT.TLorentzVector()
-        p1_vec.SetPtEtaPhiE(p1.p4().pt() ,
-                            p1.p4().eta(),
-                            p1.p4().phi(),
-                            p1.p4().e()  )
-        p2_vec.SetPtEtaPhiE(p2.p4().pt() ,
-                            p2.p4().eta(),
-                            p2.p4().phi(),
-                            p2.p4().e()  )
-        if p1_vec.DeltaR(p2_vec) >= 0.3:
-            cleanedColl.append(p1)
+        p1_vec.SetPtEtaPhiE(pair[0].p4().pt() ,
+                            pair[0].p4().eta(),
+                            pair[0].p4().phi(),
+                            pair[0].p4().e()  )
+        p2_vec.SetPtEtaPhiE(pair[1].p4().pt() ,
+                            pair[1].p4().eta(),
+                            pair[1].p4().phi(),
+                            pair[1].p4().e()  )
+        if p1_vec.DeltaR(p2_vec) <= dR:
+            jetsToRemove    .append(pair[0])
+            matchedParticles.append(pair[1])
+    for jet in toBeCleaned:
+        if jet in jetsToRemove:
+            continue
+        else:
+            cleanedColl.append(jet)
     return list(set(cleanedColl))
 
 def cosmetics():
@@ -133,7 +157,7 @@ def cosmetics():
 
 for i, event in enumerate(events):
 
-    if i+1 > 100: break
+    #if i+1 > 20: break
     print i,']'
 
     event.getByLabel(handles['genParticles'][1], handles['genParticles'][0])
@@ -230,12 +254,13 @@ for i, event in enumerate(events):
         fill4vector(final_state_tau_into_mu_from_h125 [0], histograms, 'h1_em_mu_pt')
         fill4vector(final_state_tau_into_ele_from_h125[0], histograms, 'h1_em_ele_pt')
 
-    gentau_stable = [p for p in genparticles if abs(p.pdgId()) == 15 and p.status() == 2]
-    genmu_stable  = [p for p in genparticles if abs(p.pdgId()) == 13 and p.status() == 1]
-    genele_stable = [p for p in genparticles if abs(p.pdgId()) == 11 and p.status() == 1]
+#     gentau_stable = [p for p in genparticles if abs(p.pdgId()) == 15 and p.status() == 2]
+#     genmu_stable  = [p for p in genparticles if abs(p.pdgId()) == 13 and p.status() == 1]
+#     genele_stable = [p for p in genparticles if abs(p.pdgId()) == 11 and p.status() == 1]
 
     genjetsel = [jet for jet in genjets if jet.pt()>30 and abs(jet.eta())<5.]
-    genjetsel = cleanCollection(genjetsel, gentau_stable + genmu_stable + genele_stable)
+    genjetsel = cleanCollection(genjetsel, gentau + genmu + genele)
+#     genjetsel = cleanCollection(genjetsel, gentau_stable + genmu_stable + genele_stable)
 
     histograms['h1_njets'].Fill(len(genjetsel))
     for i in xrange( min(len(genjetsel),2) ):
@@ -246,7 +271,7 @@ c1 = ROOT.TCanvas()
 
 # for k in ['h1_A_mass', 'h1_Z_mass', 'h1_h_mass']:
 for k in histograms.keys():
-    histograms[k].Draw('HIST')
+    histograms[k].Draw('HISTE')
     cosmetics()
     c1.Modified()
     c1.Update()
