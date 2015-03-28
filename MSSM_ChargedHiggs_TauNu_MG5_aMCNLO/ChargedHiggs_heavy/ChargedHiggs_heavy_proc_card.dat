@@ -1,0 +1,13 @@
+import model mssm
+define p = g u c d s u~ c~ d~ s~
+define j = g u c d s u~ c~ d~ s~
+generate p p > t~ b h+,(h+ > ta+ vt)
+
+#set lhapdf /home/slehti/public/local/bin
+
+output ChargedHiggs_heavy -nojpeg
+
+launch
+set nevents 10000
+set mhc 200
+

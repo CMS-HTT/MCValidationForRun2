@@ -1,0 +1,14 @@
+set group_subprocesses Auto
+set ignore_six_quark_processes False
+set gauge unitary
+set complex_mass_scheme False
+import model mssm
+define p = g u c d s b u~ c~ d~ s~ b~
+define j = g u c d s b u~ c~ d~ s~ b~
+define j = p
+define l+ = e+ mu+ ta+
+define l- = e- mu- ta-
+define vl~ = ve~ vm~ vt~
+define vl = ve vm vt
+generate p p > h3, (h3 > z h1, z > l+ l-, h1 > ta+ ta- )
+output PROC_MSSM_AZH

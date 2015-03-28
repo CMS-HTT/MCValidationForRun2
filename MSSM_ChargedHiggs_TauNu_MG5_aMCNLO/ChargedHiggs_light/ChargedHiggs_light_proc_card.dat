@@ -1,0 +1,18 @@
+#import model 2HDMtypeII
+import model mssm
+define p = g u c d s u~ c~ d~ s~
+define j = g u c d s u~ c~ d~ s~
+#define l+ = e+ mu+
+#define l- = e- mu-
+#define vl = ve vm vt
+#define vl~ = ve~ vm~ vt~
+generate p p > t t~ > b b~ h+ W-,(h+ > ta+ vt)
+
+#set lhapdf /home/slehti/public/local/bin
+
+output ChargedHiggs_light -nojpeg
+
+launch
+set nevents 10000
+set mhc 140
+#set iseed 0
