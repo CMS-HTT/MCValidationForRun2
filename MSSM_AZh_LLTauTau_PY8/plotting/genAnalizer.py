@@ -10,7 +10,7 @@ from cmsTitle import CMS_lumi
 from histograms import histograms
 
 
-mass = '220'
+mass = '350'
 histograms['h1_A_mass'] = ROOT.TH1F('h1_A_mass', '',  40,  int(mass)*0.95, int(mass)*1.05)
 histograms['h1_A_mass'].SetMinimum(0.)
 histograms['h1_A_mass'].SetLineWidth(2)
@@ -68,7 +68,6 @@ events = Events ([
                   '../{MASS}/first2k_20of20/HIG-RunIIWinter15GS-00003_20of20.root'.format(MASS = mass),
                   ])
 
-
 handles = {}
 handles['genParticles'] = [Handle('std::vector<reco::GenParticle>'), 'genParticles']
 handles['ak4GenJets']   = [Handle('vector<reco::GenJet>'          ), 'ak4GenJets']
@@ -86,41 +85,70 @@ def fill4vector(particle, histograms, key):
     histograms['_'.join(key_parts[:-1]+['phi' ])].Fill(particle.phi() )
 
 def tauDecayMode(tau):
+
     unstable = True
+
+    dm = 'tau'
+    final_daughter = tau
+
     while unstable:
         nod = tau.numberOfDaughters()
         for i in range(nod):
-            try:
-               tau.daughter(i).pdgId()
-            except:
-                continue
-            if abs(tau.daughter(i).pdgId()) == 11 and tau.daughter(i).status() == 1:
+            dau = tau.daughter(i)
+            if abs(dau.pdgId()) == 11 and dau.status() == 1:
                 dm = 'ele'
-                final_daughter = tau.daughter(i)
+                final_daughter = dau
                 unstable = False
-            elif abs(tau.daughter(i).pdgId()) == 13 and tau.daughter(i).status() == 1:
+                break
+            elif abs(dau.pdgId()) == 13 and dau.status() == 1:
                 dm = 'muon'
-                final_daughter = tau.daughter(i)
+                final_daughter = dau
                 unstable = False
-            elif abs(tau.daughter(i).pdgId()) == 15:
-                if tau.daughter(i).status() == 2:
-                    dm = 'tau'
-                    final_daughter = tau.daughter(i)
-                    unstable = False
-                else:
-                    tau = tau.daughter(i)
-            elif abs(tau.daughter(i).pdgId()) in [211, 321]:
-                    dm = 'tau'
-                    final_daughter = tau.daughter(i)
-                    unstable = False
-    if not dm:
-        print 'ERROR'
-        print 'this tau decays in fancy ways'
-        raise
+                break
+            elif abs(dau.pdgId()) == 15: #taus may do bremsstrahlung
+                dm = 'tau'
+                final_daughter = dau
+                tau = dau # check its daughters
+                break
+            elif abs(dau.pdgId()) not in (12, 14, 16):
+                unstable = False
+                break
+            else:
+                pass
 
     return dm, final_daughter
 
-def cleanCollection(toBeCleaned, otherCollection, dR = 0.3):
+def deltaR(p1, p2):
+    p1_vec = ROOT.TLorentzVector()
+    p2_vec = ROOT.TLorentzVector()
+    p1_vec.SetPtEtaPhiE(p1.p4().pt() ,
+                        p1.p4().eta(),
+                        p1.p4().phi(),
+                        p1.p4().e()  )
+    p2_vec.SetPtEtaPhiE(p2.p4().pt() ,
+                        p2.p4().eta(),
+                        p2.p4().phi(),
+                        p2.p4().e()  )
+    return p1_vec.DeltaR(p2_vec)
+
+def deltaPhi(p1, p2):
+    p1_vec = ROOT.TLorentzVector()
+    p2_vec = ROOT.TLorentzVector()
+    p1_vec.SetPtEtaPhiE(p1.p4().pt() ,
+                        p1.p4().eta(),
+                        p1.p4().phi(),
+                        p1.p4().e()  )
+    p2_vec.SetPtEtaPhiE(p2.p4().pt() ,
+                        p2.p4().eta(),
+                        p2.p4().phi(),
+                        p2.p4().e()  )
+    return p1_vec.DeltaPhi(p2_vec)
+
+def cleanCollection(toBeCleaned, otherCollection, dR = 0.3, match = False):
+    '''
+    match returns a subset of elements of toBeCleaned that match
+    with at least one element of otherCollection
+    '''
     cleanedColl      = []
     jetsToRemove     = []
     matchedParticles = []
@@ -140,11 +168,15 @@ def cleanCollection(toBeCleaned, otherCollection, dR = 0.3):
         if p1_vec.DeltaR(p2_vec) <= dR:
             jetsToRemove    .append(pair[0])
             matchedParticles.append(pair[1])
-    for jet in toBeCleaned:
-        if jet in jetsToRemove:
-            continue
-        else:
+    if match:
+        for jet in jetsToRemove:
             cleanedColl.append(jet)
+    else:
+        for jet in toBeCleaned:
+            if jet in jetsToRemove:
+                continue
+            else:
+                cleanedColl.append(jet)
     return list(set(cleanedColl))
 
 def cosmetics():
@@ -157,7 +189,7 @@ def cosmetics():
 
 for i, event in enumerate(events):
 
-    #if i+1 > 20: break
+    #if i+1 > 5: break
     print i,']'
 
     event.getByLabel(handles['genParticles'][1], handles['genParticles'][0])
@@ -180,6 +212,11 @@ for i, event in enumerate(events):
         print '\nERROR'
         print 'num. of A %d, num. of Z %d, num. of h %d\n' %(len(genA), len(genZ), len(genh))
         raise
+
+    for index in range(genZ[0].numberOfDaughters()):
+        dau = genZ[0].daughter(index)
+        if abs(dau.pdgId()) not in (11,13,15):
+            import pdb ; pdb.set_trace()
 
     fill4vector(genA[0], histograms, 'h1_A_mass')
     fill4vector(genZ[0], histograms, 'h1_Z_mass')
@@ -214,6 +251,10 @@ for i, event in enumerate(events):
         else:
             print 'How the hell this tau decays?!'
             raise
+
+    histograms['h1_delta_phi_ll'].Fill( deltaPhi( genh[0].daughter(0), genh[0].daughter(1) ) )
+    histograms['h1_delta_eta_ll'].Fill( abs(genh[0].daughter(0).eta() - genh[0].daughter(1).eta()) )
+    histograms['h1_delta_r_ll']  .Fill( deltaR  ( genh[0].daughter(0), genh[0].daughter(1) ) )
 
     if len(final_state_tau_into_had_from_h125) == 2 :
         histograms['h1_channel'].Fill('tt',1.)
@@ -254,17 +295,49 @@ for i, event in enumerate(events):
         fill4vector(final_state_tau_into_mu_from_h125 [0], histograms, 'h1_em_mu_pt')
         fill4vector(final_state_tau_into_ele_from_h125[0], histograms, 'h1_em_ele_pt')
 
-#     gentau_stable = [p for p in genparticles if abs(p.pdgId()) == 15 and p.status() == 2]
-#     genmu_stable  = [p for p in genparticles if abs(p.pdgId()) == 13 and p.status() == 1]
-#     genele_stable = [p for p in genparticles if abs(p.pdgId()) == 11 and p.status() == 1]
-
     genjetsel = [jet for jet in genjets if jet.pt()>30 and abs(jet.eta())<5.]
     genjetsel = cleanCollection(genjetsel, gentau + genmu + genele)
-#     genjetsel = cleanCollection(genjetsel, gentau_stable + genmu_stable + genele_stable)
 
     histograms['h1_njets'].Fill(len(genjetsel))
     for i in xrange( min(len(genjetsel),2) ):
         fill4vector(genjetsel[i], histograms, 'h1_jet{I}_eta'.format(I=str(i+1)))
+
+    if len(genjetsel) >= 2:
+        histograms['h1_delta_phi_jj'].Fill( deltaPhi( genjetsel[0], genjetsel[1] ) )
+        histograms['h1_delta_eta_jj'].Fill( abs( genjetsel[0].eta() - genjetsel[1].eta() ) )
+        histograms['h1_delta_r_jj'  ].Fill( deltaR  ( genjetsel[0], genjetsel[1] ) )
+
+    bquarks    = [p for p  in genparticles if abs(p.pdgId()) == 5]
+    genbjetsel = [jet for jet in genjets if jet.pt()>20 and abs(jet.eta())<2.4]
+
+    bjets = 0
+    bjets = cleanCollection(genbjetsel, bquarks, match = True)
+    histograms['h1_nbjets'].Fill(len(bjets))
+
+
+    genmet = gennu[0].p4()
+    for nu in gennu[1:]:
+        genmet += nu.p4()
+    histograms['h1_met_pt' ].Fill(genmet.pt() )
+    histograms['h1_met_phi'].Fill(genmet.phi())
+
+
+    genlep_fromZ = [p for p in genparticles if p.mother() and abs(p.mother().pdgId()) == 23]
+    genlep_fromh = [p for p in genparticles if p.mother() and abs(p.mother().pdgId()) == 25]
+
+    if len(genlep_fromZ) != 2 or len(genlep_fromh) != 2:
+        print 'ERROR'
+        print 'Z has got %d daughters and h has got %d daughters' % (len(genlep_fromZ), len(genlep_fromh))
+        raise
+
+    # sum pt
+    final_state_obj = genjetsel + genlep_fromZ + genlep_fromh
+    sumPt = final_state_obj[0].pt()
+    for obj in final_state_obj[1:]:
+        sumPt += obj.pt()
+
+    histograms['h1_sumpt'].Fill(sumPt)
+
 
 # make a canvas, draw, and save it
 c1 = ROOT.TCanvas()
@@ -276,3 +349,4 @@ for k in histograms.keys():
     c1.Modified()
     c1.Update()
     c1.Print(folder+'/'+k+'.pdf')
+    #c1.Print(folder+'/'+k+'.png')
