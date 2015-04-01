@@ -5,7 +5,7 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 from utils                          import cleanCollection, cosmetics, deltaPhi, deltaR, fill4vector, tauDecayMode
 from genAnalyzer                    import genAnalyzer
 
-class genAnalyzerAZh( genAnalyzer ):
+class genAnalyzerMSSM_AZh( genAnalyzer ):
 
     def process(self, event):
 
@@ -157,7 +157,7 @@ class genAnalyzerAZh( genAnalyzer ):
 
 if __name__ == '__main__':
 
-    analyzer = genAnalyzerAZh(mass = 400,
+    analyzer = genAnalyzerMSSM_AZh(mass = 400,
         extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 400 GeV, tan#beta = 2',
         maxEvents = 10)
     analyzer.loop()
