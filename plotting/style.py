@@ -21,7 +21,7 @@ class PlotStyle(object):
     def _initDefaultStyle(self):
         gROOT.Reset()
         gROOT.SetStyle("Plain")
-        gStyle.SetOptStat(0)
+        #gStyle.SetOptStat(0)
         gStyle.SetOptFit(1111)
         gStyle.SetPadLeftMargin(0.1)
         gStyle.SetPadBottomMargin(0.1)
@@ -42,12 +42,6 @@ class PlotStyle(object):
     def initStyle():
         gROOT.SetStyle("Plain")
         gStyle.SetOptFit()
-        gStyle.SetOptStat(0)
-
-        # Stat stile:
-        gStyle.SetOptStat(1)
-        gStyle.SetStatBorderSize(0)
-        gStyle.SetOptStat('emr')
 
         # For the canvas:
         gStyle.SetCanvasBorderMode(0)
@@ -105,14 +99,15 @@ class PlotStyle(object):
         # gStyle.SetDateY(Float_t y = 0.01)
 
         # For the statistics box:
+        gStyle.SetOptStat(1)
+        gStyle.SetStatBorderSize(0)
+        gStyle.SetOptStat('emr')
         gStyle.SetOptFile(0)
-        gStyle.SetOptStat(0) # To display the mean and RMS:   SetOptStat("mr")
         gStyle.SetStatColor(TStyle.kWhite)
         gStyle.SetStatFont(42)
         gStyle.SetStatFontSize(0.025)
         gStyle.SetStatTextColor(1)
         gStyle.SetStatFormat("6.4g")
-        gStyle.SetStatBorderSize(1)
         gStyle.SetStatH(0.1)
         gStyle.SetStatW(0.15)
         # gStyle.SetStatStyle(Style_t style = 1001)

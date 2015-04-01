@@ -107,7 +107,7 @@ def cleanCollection(toBeCleaned, otherCollection, dR = 0.3, match = False):
 def cosmetics(header):
     header.CMS_lumi(ROOT.gPad, 4, 0)
     stats = ROOT.gPad.GetPrimitive('stats')
-    #stats.SetY1NDC(0.82)
-    #stats.SetY2NDC(0.92)
-    #stats.SetX1NDC(0.72)
-    #stats.SetX2NDC(0.92)
+    stats.SetY1NDC(0.82)
+    stats.SetY2NDC(0.92)
+    stats.SetX1NDC(0.72)
+    stats.SetX2NDC(0.92)

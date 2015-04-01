@@ -157,9 +157,10 @@ class genAnalyzerMSSM_AZh( genAnalyzer ):
 
 if __name__ == '__main__':
 
-    analyzer = genAnalyzerMSSM_AZh(mass = 400,
-        extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 400 GeV, tan#beta = 2',
-        maxEvents = 10)
+    analyzer = genAnalyzerMSSM_AZh(mass = 300,
+        pathToFiles = '../MSSM_AZh_LLTauTau_PY8/300/first2k_*/HIG-RunIIWinter15GS-00003*.root',
+        extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 300 GeV, tan#beta = 2',
+        maxEvents = 100)
     analyzer.loop()
     analyzer.saveHistos()
 
