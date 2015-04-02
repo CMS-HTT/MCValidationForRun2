@@ -61,7 +61,7 @@ class genAnalyzer( object ):
     def loop(self):
 
         for i, event in enumerate(self.events):
-            if i+1 > self.maxEvents: break
+            if i+1 > self.maxEvents > 0 : break
             print i,']'
             self.process(event)
 

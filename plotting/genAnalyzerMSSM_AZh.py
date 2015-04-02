@@ -124,13 +124,14 @@ class genAnalyzerMSSM_AZh( genAnalyzer ):
             self.histograms['h1_delta_eta_jj'].Fill( abs( genjetsel[0].eta() - genjetsel[1].eta() ) )
             self.histograms['h1_delta_r_jj'  ].Fill( deltaR  ( genjetsel[0], genjetsel[1] ) )
 
-        bquarks    = [p for p  in genparticles if abs(p.pdgId()) == 5]
+        # just consider outgoing bquarks, i.e. about to hadronise, status 71
+        # http://home.thep.lu.se/~torbjorn/pythia81html/ParticleProperties.html
+        bquarks    = [p for p  in genparticles if abs(p.pdgId()) == 5 and p.status() == 71]
         genbjetsel = [jet for jet in genjets if jet.pt()>20 and abs(jet.eta())<2.4]
 
         bjets = 0
         bjets = cleanCollection(genbjetsel, bquarks, match = True)
         self.histograms['h1_nbjets'].Fill(len(bjets))
-
 
         genmet = gennu[0].p4()
         for nu in gennu[1:]:
@@ -160,7 +161,7 @@ if __name__ == '__main__':
     analyzer = genAnalyzerMSSM_AZh(mass = 300,
         pathToFiles = '../MSSM_AZh_LLTauTau_PY8/300/first2k_*/HIG-RunIIWinter15GS-00003*.root',
         extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 300 GeV, tan#beta = 2',
-        maxEvents = 100)
+        maxEvents = -1)
     analyzer.loop()
     analyzer.saveHistos()
 
