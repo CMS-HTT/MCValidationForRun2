@@ -130,6 +130,7 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
 				'Check:epTolErr = 0.01',
 				'25:onMode = off',    # turn OFF all H decays
 				'25:onIfAny = 15',    # turn ON H->tautau
+                '25:m0 = 125', # fix h mass to 125
 				),
 	    parameterSets = cms.vstring('processParameters')
 	    )
