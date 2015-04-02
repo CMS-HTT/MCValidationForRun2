@@ -5,6 +5,7 @@ import sys
 import os
 
 from cmsTitle                       import CMS_header
+from getFiles                       import get_files
 from histograms                     import returnHistos
 from style                          import PlotStyle
 from utils                          import cleanCollection, cosmetics, deltaPhi, deltaR, fill4vector, tauDecayMode
@@ -13,12 +14,13 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 
 class genAnalyzer( object ):
 
-    def __init__(self, mass, extraTitle = '', maxEvents = -1):
+    def __init__(self, mass, pathToFiles, extraTitle = '', maxEvents = -1):
 
-        self.mass       = str(mass)
-        self.maxEvents  = maxEvents
-        self.extraTitle = extraTitle
-        self.histograms = returnHistos(self.mass)
+        self.mass        = str(mass)
+        self.maxEvents   = maxEvents
+        self.extraTitle  = extraTitle
+        self.histograms  = returnHistos(self.mass)
+        self.pathToFiles = pathToFiles
 
         self._iniStyle()
         self._iniFolder()
@@ -53,13 +55,8 @@ class genAnalyzer( object ):
         self.handles['ak4GenJets']   = [Handle('vector<reco::GenJet>'          ), 'ak4GenJets'  ]
 
     def _getEvents(self):
-        '''
-        file location is hard coded.
-        FIXME!
-        '''
-        self.events = Events ([
-                               '/afs/cern.ch/work/m/manzoni/mc-generation/CMSSW_7_1_13/src/MSSM_AZh_LLTauTau_MG5_aMCNLO/PROC_MSSM_AZH/Events/run_02/EDM2GEN_PY8.root',
-                              ])
+        files = get_files(self.pathToFiles)
+        self.events = Events(files)
 
     def loop(self):
 
@@ -88,8 +85,9 @@ class genAnalyzer( object ):
 if __name__ == '__main__':
 
     analyzer = genAnalyzer(mass = 400,
-        extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 400 GeV, tan#beta = 2',
-        maxEvents = 10)
+        pathToFiles = '../MSSM_AZh_LLTauTau_PY8/300/first2k_*/HIG-RunIIWinter15GS-00003*.root',
+        extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 300 GeV, tan#beta = 2',
+        maxEvents = 50)
     analyzer.loop()
     analyzer.saveHistos()
 
