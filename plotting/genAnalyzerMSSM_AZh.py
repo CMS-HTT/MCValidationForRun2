@@ -133,6 +133,8 @@ class genAnalyzerMSSM_AZh( genAnalyzer ):
         bjets = cleanCollection(genbjetsel, bquarks, match = True)
         self.histograms['h1_nbjets'].Fill(len(bjets))
 
+        if len(bjets) == 2: import pdb ; pdb.set_trace()
+
         genmet = gennu[0].p4()
         for nu in gennu[1:]:
             genmet += nu.p4()
@@ -159,7 +161,8 @@ class genAnalyzerMSSM_AZh( genAnalyzer ):
 if __name__ == '__main__':
 
     analyzer = genAnalyzerMSSM_AZh(mass = 300,
-        pathToFiles = '../MSSM_AZh_LLTauTau_PY8/300/first2k_*/HIG-RunIIWinter15GS-00003*.root',
+#         pathToFiles = '../MSSM_AZh_LLTauTau_PY8/300/first2k_*/HIG-RunIIWinter15GS-00003*.root',
+        pathToFiles = '../MSSM_AZh_LLTauTau_MG5_aMCNLO/PROC_MSSM_AZH/Events/run_0*/EDM2GEN_PY8.root',
         extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 300 GeV, tan#beta = 2',
         maxEvents = -1)
     analyzer.loop()
