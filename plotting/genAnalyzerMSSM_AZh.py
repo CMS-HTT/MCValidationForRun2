@@ -28,12 +28,9 @@ class genAnalyzerMSSM_AZh( genAnalyzer ):
            len(genh) != 1:
             print '\nERROR'
             print 'num. of A %d, num. of Z %d, num. of h %d\n' %(len(genA), len(genZ), len(genh))
-            raise
-
-        for index in range(genZ[0].numberOfDaughters()):
-            dau = genZ[0].daughter(index)
-            if abs(dau.pdgId()) not in (11,13,15):
-                import pdb ; pdb.set_trace()
+            import pdb ; pdb.set_trace()
+            return
+            #raise
 
         fill4vector(genA[0], self.histograms, 'h1_A_mass')
         fill4vector(genZ[0], self.histograms, 'h1_Z_mass')
@@ -133,8 +130,6 @@ class genAnalyzerMSSM_AZh( genAnalyzer ):
         bjets = cleanCollection(genbjetsel, bquarks, match = True)
         self.histograms['h1_nbjets'].Fill(len(bjets))
 
-        if len(bjets) == 2: import pdb ; pdb.set_trace()
-
         genmet = gennu[0].p4()
         for nu in gennu[1:]:
             genmet += nu.p4()
@@ -161,9 +156,16 @@ class genAnalyzerMSSM_AZh( genAnalyzer ):
 if __name__ == '__main__':
 
     analyzer = genAnalyzerMSSM_AZh(mass = 300,
+        #pathToFiles = '/afs/cern.ch/work/m/manzoni/mc-generation/CMSSW_7_1_13/src/MSSM_AZh_LLTauTau_MG5_aMCNLO_2HDM4MG5/madgraph5/PROC_ggAZhlltt_HEFT/Events/run_01/EDM2GEN_PY8.root',
+        #pathToFiles = '/afs/cern.ch/work/m/manzoni/mc-generation/CMSSW_7_1_13/src/MSSM_AZh_LLTauTau_PY8/300/first2k_*/HIG-RunIIWinter15GS-00003*.root',
+        #pathToFiles = '/afs/cern.ch/work/m/manzoni/mc-generation/CMSSW_7_1_13/src/MSSM_AZh_LLTauTau_MG5_aMCNLO_2HDM4MG5/madgraph5/PROC_ggAZhlltt_offshell_HEFT/Events/run_01/EDM2GEN_PY8.root',
+        pathToFiles = '/afs/cern.ch/work/m/manzoni/mc-generation/CMSSW_7_1_13/src/MSSM_AZh_LLTauTau_MG5_aMCNLO_SusHi/madgraph5/PROC_GGH_HEFT/Events/run_04/EDM2GEN_PY8.root',
+#         pathToFiles = '/afs/cern.ch/work/m/manzoni/mc-generation/CMSSW_7_1_13/src/MSSM_AZh_LLTauTau_MG5_aMCNLO_2HDM4MG5/madgraph5/PROC_ggAZhlltt_offshell_HEFT/Events/run_01/EDM2GEN_PY8.root',
+#         extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 300 GeV, tan#beta = 2',
+#         extraTitle = 'MG5_aMC SusHi A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 300 GeV, tan#beta = 2',
+        extraTitle = 'MG5_aMC A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 300 GeV, tan#beta = 2',
 #         pathToFiles = '../MSSM_AZh_LLTauTau_PY8/300/first2k_*/HIG-RunIIWinter15GS-00003*.root',
-        pathToFiles = '../MSSM_AZh_LLTauTau_MG5_aMCNLO/PROC_MSSM_AZH/Events/run_0*/EDM2GEN_PY8.root',
-        extraTitle = 'PYTHIA8 A#rightarrowZh, h#rightarrow#tau#tau, m_{A}= 300 GeV, tan#beta = 2',
+#         pathToFiles = '../MSSM_AZh_LLTauTau_MG5_aMCNLO/PROC_MSSM_AZH/Events/run_0*/EDM2GEN_PY8.root',
         maxEvents = -1)
     analyzer.loop()
     analyzer.saveHistos()
