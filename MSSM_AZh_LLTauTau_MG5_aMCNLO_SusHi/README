@@ -1,0 +1,2 @@
+wget https://cp3.irmp.ucl.ac.be/projects/madgraph/raw-attachment/wiki/aMCSushi/src_mod_ggH-official_v2.2.3.tar
+tar -xf src_mod_ggH-official_v2.2.3.tar 
