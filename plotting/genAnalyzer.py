@@ -12,6 +12,8 @@ from utils                          import cleanCollection, cosmetics, deltaPhi,
 from DataFormats.FWLite             import Events, Handle
 from FWCore.ParameterSet.VarParsing import VarParsing
 
+ROOT.TH1.SetDefaultSumw2()
+
 class genAnalyzer( object ):
 
     def __init__(self, mass, pathToFiles, extraTitle = '', maxEvents = -1):
@@ -21,6 +23,8 @@ class genAnalyzer( object ):
         self.extraTitle  = extraTitle
         self.histograms  = returnHistos(self.mass)
         self.pathToFiles = pathToFiles
+
+        self.sumOfWeights = 0.
 
         self._iniStyle()
         self._iniFolder()
@@ -52,8 +56,13 @@ class genAnalyzer( object ):
     def _iniHandles(self):
         self.handles = {}
         self.handles['genParticles'] = [Handle('std::vector<reco::GenParticle>'), 'genParticles']
-        self.handles['ak4GenJets']   = [Handle('vector<reco::GenJet>'          ), 'ak4GenJets'  ]
-
+        self.handles['ak4GenJets'  ] = [Handle('vector<reco::GenJet>'          ), 'ak4GenJets'  ]
+        self.handles['generator'   ] = [Handle('GenEventInfoProduct'           ), 'generator'   ]
+        try:
+            self.handles['source'] = [Handle('LHEEventProduct'), 'source']
+        except:
+            pass
+            
     def _getEvents(self):
         files = get_files(self.pathToFiles)
         self.events = Events(files)
@@ -68,19 +77,31 @@ class genAnalyzer( object ):
     def process(self, event):
         pass
 
-    def saveHistos(self, png = False):
+    def saveHistos(self, png = False, rootfile = 'histos.root'):
         # make a canvas, draw, and save it
         c1 = ROOT.TCanvas()
         header = CMS_header(self.extraTitle)
 
+        if len(rootfile):
+            file = ROOT.TFile.Open(self.folder+'/'+rootfile, 'recreate')
+            file.cd()
+
         for k in self.histograms.keys():
-            self.histograms[k].Draw('HISTE')
+            self.histograms[k].Scale(1./max(1.E-6, self.sumOfWeights))
+            self.histograms[k].SetMinimum(0.)
+            self.histograms[k].DrawNormalized('HISTE')
             cosmetics(header)
             c1.Modified()
             c1.Update()
             c1.Print(self.folder+'/'+k+'.pdf')
             if png:
                 c1.Print(self.folder+'/'+k+'.png')
+            self.histograms[k].Write()
+        
+        try:
+            file.Close()
+        except:
+            pass    
 
 if __name__ == '__main__':
 

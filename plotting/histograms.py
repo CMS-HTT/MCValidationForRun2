@@ -93,7 +93,7 @@ def _createHistos():
         histo.SetFillColor(kOrange)
         histo.SetFillStyle(3344)
         histo.SetMarkerStyle(8)
-        histo.GetYaxis().SetTitle('events')
+        histo.GetYaxis().SetTitle('a.u.')
         histo.GetYaxis().SetTitleOffset(1.6)
         histo.GetXaxis().SetTitle(v[5])
         histo.GetXaxis().SetTitleOffset(1.3)

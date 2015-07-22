@@ -82,20 +82,26 @@ class comparer(object):
                 numerator = dc(histo)
                 numerator.SetStats(0)
                 
+                numerator.Divide(denominator)
+                
                 for bin in range(numerator.GetNbinsX()+1):
-                    num = numerator.GetBinContent(bin)
-                    den = max(0.00001, denominator.GetBinContent(bin))
-                    diff = num / den -1.                    
-                    numerator.SetBinContent( bin, diff )
+                    numerator.SetBinContent( bin, numerator.GetBinContent(bin) - 1.)
+
+#                     num = numerator.GetBinContent(bin)
+#                     den = max(0.00001, denominator.GetBinContent(bin))
+#                     diff = num / den -1.                    
+#                     numerator.SetBinContent( bin, diff )
 #                 numerator.Divide(denominator)
                 self._histoStyle(numerator, v[1])
                 numerator.SetTitle('')
-                numerator.GetYaxis().SetRangeUser(-1.,1.)
+                numerator.GetYaxis().SetRangeUser(-.5,.5)
                 numerator.GetYaxis().SetNdivisions(6)
                 numerator.GetYaxis().SetTitle('diff over '+ self.files.items()[0][0])
 
                 numerator.GetYaxis().SetLabelSize(0.06)
                 numerator.GetXaxis().SetLabelSize(0.06)
+
+#                 numerator.SetMarkerColor(numerator.GetLineColor())
 
                 numerator.GetYaxis().SetTitleSize(0.05)
                 numerator.GetXaxis().SetTitleSize(0.07)

@@ -1,4 +1,5 @@
 import os
+import time
 from optparse import OptionParser
 
 parser = OptionParser()
@@ -28,19 +29,23 @@ for i in range(int(options.events)):
             new_line = line.rstrip()
         print >> new_file, new_line
     # change the seed
-    seed = str(123456789 + i * 7333)
+    seed = str(int(time.time()*1000))[4:]
+    #seed = str(123456789 + i * 7333)
     print >> new_file, '\nimport random\nprocess.RandomNumberGeneratorService.generator.initialSeed = cms.untracked.uint32({SEED})\nrandom.seed(process.RandomNumberGeneratorService.generator.initialSeed.value())'.format(SEED = seed)
     file_cfg.close()
     new_file.close()
 
     batch_script = open('batchscript.sh','w')
-    print >> batch_script, '#!/bin/bash\n\
-export SCRAM_ARCH=slc6_amd64_gcc481\n\
-W_DIR="{CURRENT}"\n\
-cd $W_DIR\n\
-eval `scramv1 ru -sh`\n\
-echo "running"\n\
-cmsRun {NEW_CFG}'.format(CURRENT = os.getcwd(), NEW_CFG = 'HIG-RunIIWinter15GS-00003_1_'+appendix+'_cfg.py')
+    print >> batch_script, '#!/bin/bash\n'                        \
+                           'export SCRAM_ARCH=slc6_amd64_gcc481\n'\
+                           'W_DIR="{CURRENT}"\n'                  \
+                           'cd $W_DIR\n'                          \
+                           'eval `scramv1 ru -sh`\n'              \
+                           'echo "running"\n'                     \
+                           'cmsRun {NEW_CFG}\n'                   \
+                           '#seed = {SEED}'.format(CURRENT = os.getcwd(), 
+                                                   NEW_CFG = 'HIG-RunIIWinter15GS-00003_1_'+appendix+'_cfg.py',
+                                                   SEED    = seed)
     batch_script.close()
 
     os.system('chmod 775 batchscript.sh')

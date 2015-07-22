@@ -1,13 +1,13 @@
 import ROOT
 from itertools import product
 
-def fill4vector(particle, histograms, key):
+def fill4vector(particle, histograms, key, weight):
     key_parts = key.split('_')
     try: histograms['_'.join(key_parts[:-1]+['mass'])].Fill(particle.mass())
     except: pass
-    histograms['_'.join(key_parts[:-1]+['pt'  ])].Fill(particle.pt()  )
-    histograms['_'.join(key_parts[:-1]+['eta' ])].Fill(particle.eta() )
-    histograms['_'.join(key_parts[:-1]+['phi' ])].Fill(particle.phi() )
+    histograms['_'.join(key_parts[:-1]+['pt'  ])].Fill(particle.pt() , weight)
+    histograms['_'.join(key_parts[:-1]+['eta' ])].Fill(particle.eta(), weight)
+    histograms['_'.join(key_parts[:-1]+['phi' ])].Fill(particle.phi(), weight)
 
 def tauDecayMode(tau):
 
@@ -106,8 +106,11 @@ def cleanCollection(toBeCleaned, otherCollection, dR = 0.3, match = False):
 
 def cosmetics(header):
     header.CMS_lumi(ROOT.gPad, 4, 0)
-    stats = ROOT.gPad.GetPrimitive('stats')
-    stats.SetY1NDC(0.82)
-    stats.SetY2NDC(0.92)
-    stats.SetX1NDC(0.72)
-    stats.SetX2NDC(0.92)
+    try:
+        stats = ROOT.gPad.GetPrimitive('stats')
+        stats.SetY1NDC(0.82)
+        stats.SetY2NDC(0.92)
+        stats.SetX1NDC(0.72)
+        stats.SetX2NDC(0.92)
+    except:
+        pass

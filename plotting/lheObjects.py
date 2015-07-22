@@ -67,3 +67,4 @@ class Particle(object):
         self.pup5    = float(lhe_line.split()[10]) # mass
         self.vtimup  = float(lhe_line.split()[11]) # does produce a secondary vertex? default 0 
         self.spinup  = float(lhe_line.split()[12]) # spin. Default 9 means no spin information
+
