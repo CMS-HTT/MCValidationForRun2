@@ -1,0 +1,38 @@
+The 2HDM MadGraph model can be found here
+/afs/cern.ch/user/m/manzoni/public/2HDM/2HDMforMG5/2HDM4MG5-may15.tar.gz
+
+
+Parameters computed using FeynHiggs
+for MSSM (Type II 2HDM) mh mod + scenario,
+tan\beta = 2
+
+Ref. https://github.com/CMS-HTT/MCValidationForRun2/tree/master/MSSM_AZh_LLTauTau_PY8
+
+mass    mh1     mh2     mh3     mhc     alpha   lambda6     lambda7     m122        tb      type
+220     125.    239.7   220.    233.4   -0.636  0.          0.          36317.0     2.      2 
+240     125.    257.9   240.    252.3   -0.608  0.          0.          42436.9     2.      2 
+260     125.    276.4   260.    271.6   -0.586  0.          0.          49177.7     2.      2 
+280     125.    295.1   280.    290.8   -0.569  0.          0.          56376.4     2.      2 
+300     125.    314.0   300.    310.2   -0.555  0.          0.          64149.4     2.      2 
+320     125.    333.1   320.    329.7   -0.544  0.          0.          72468.0     2.      2 
+340     125.    352.5   340.    349.7   -0.534  0.          0.          81526.7     2.      2 
+350     125.    362.0   350.    359.4   -0.530  0.          0.          86112.2     2.      2 
+400     125.    409.5   400.    407.8   -0.514  0.          0.         110867.2     2.      2 
+
+
+
+Parameter Cards
+produced using the parameters above and running the script (you have to compile first, read the README there)
+/afs/cern.ch/user/m/manzoni/public/2HDM/2HDMforMG5/gencard_2hdmv1.0beta/GenCard
+
+./GenCard 125.    239.7   220.    233.4   -0.636  0.          0.          36317.0     2.      2  param_card_mA220.dat
+./GenCard 125.    257.9   240.    252.3   -0.608  0.          0.          42436.9     2.      2  param_card_mA240.dat
+./GenCard 125.    276.4   260.    271.6   -0.586  0.          0.          49177.7     2.      2  param_card_mA260.dat
+./GenCard 125.    295.1   280.    290.8   -0.569  0.          0.          56376.4     2.      2  param_card_mA280.dat
+./GenCard 125.    314.0   300.    310.2   -0.555  0.          0.          64149.4     2.      2  param_card_mA300.dat
+./GenCard 125.    333.1   320.    329.7   -0.544  0.          0.          72468.0     2.      2  param_card_mA320.dat
+./GenCard 125.    352.5   340.    349.7   -0.534  0.          0.          81526.7     2.      2  param_card_mA340.dat
+./GenCard 125.    362.0   350.    359.4   -0.530  0.          0.          86112.2     2.      2  param_card_mA350.dat
+./GenCard 125.    409.5   400.    407.8   -0.514  0.          0.         110867.2     2.      2  param_card_mA400.dat
+
+
