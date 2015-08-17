@@ -117,25 +117,36 @@ class ParamCard(object):
         for v in self.blocks.values() + self.decays.values():
             v.Print()        
 
-    def PrintCustom(self):
+    def PrintCustom(self, file = ''):
         '''
         Use this module to produce the customized card needed for the gridpack.
         '''
         # In principle it'd be better to have a diff fucntion wrt a reference param card
-
+        
+        lines = []
+        
         for v in self.blocks.values():
             for i in v.blockItems:
-                print 'set param_card {BLOCK} {ID} {VALUE}' \
-                      ''.format(BLOCK = v.name, 
-                                ID    = ' '.join([str(id) for id in i.id]),
-                                VALUE = i.value)
+                toPrint = 'set param_card {BLOCK} {ID} {VALUE}' \
+                          ''.format(BLOCK = v.name, 
+                                    ID    = ' '.join([str(id) for id in i.id]),
+                                    VALUE = i.value)
 
-        for v in self.decays.values():
-            for i in v.decayModes:
-                print 'set param_card {DECAY} {PDGID} {WIDTH} ' \
-                      ''.format(DECAY = v.pdgId, 
-                                PDGID = v.pdgId,
-                                WIDTH = v.width)
+                lines.append(toPrint)
+            
+                print toPrint
+
+        if len(file):
+            fo = open(file, 'w+')
+            for line in lines:
+                fo.write(line+'\n') 
+
+#         for v in self.decays.values():
+#             for i in v.decayModes:
+#                 print 'set param_card {DECAY} {PDGID} {WIDTH} ' \
+#                       ''.format(DECAY = v.pdgId, 
+#                                 PDGID = v.pdgId,
+#                                 WIDTH = v.width)
         
 
 class Block(object):
@@ -233,8 +244,18 @@ class DecayMode(object):
 
 
 if __name__ == '__main__':
-    mypc = ParamCard('../param_cards/param_card_mA300.dat')
-    defaultpc = ParamCard('../../../../CMSSW_7_1_13/src/MSSM_AZh_LLTauTau_MG5_aMCNLO_2HDM4MG5/madgraph5/PROC_ggAZhlltt_mA300_HEFT/Cards/param_card_default.dat')
+#     mypc = ParamCard('../param_cards/param_card_mA300.dat')
+#     defaultpc = ParamCard('../../../../CMSSW_7_1_13/src/MSSM_AZh_LLTauTau_MG5_aMCNLO_2HDM4MG5/madgraph5/PROC_ggAZhlltt_mA300_HEFT/Cards/param_card_default.dat')
 #     mypc.Print()
 #     mypc.PrintCustom()
+
+
+    masses = ['400','350','340','320','300','280','260','240','220']
+    for mass in masses:
+        mypc = ParamCard('../param_cards/param_card_mA%s.dat' %mass)
+        mypc.PrintCustom('customizedcards_mA%s.dat' %mass)
+        
+
+
+
 
